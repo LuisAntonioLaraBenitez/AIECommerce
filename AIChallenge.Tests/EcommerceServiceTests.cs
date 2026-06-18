@@ -1,5 +1,6 @@
 using AIChallenge.Data;
 using AIChallenge.Models;
+using AIChallenge.Repositories;
 using AIChallenge.Services;
 using Xunit;
 
@@ -80,9 +81,9 @@ public sealed class EcommerceServiceTests
 
     private static EcommerceService CreateService(AppData data, CapturingPurchaseLogger logger)
     {
-        InMemoryDataStore dataStore = new(data);
+        InMemoryEcommerceRepository repository = new(data);
         FixedTimeProvider timeProvider = new(new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero));
-        return new EcommerceService(dataStore, logger, timeProvider);
+        return new EcommerceService(repository, logger, timeProvider);
     }
 
     private static Customer CreateCustomer()

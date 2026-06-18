@@ -1,16 +1,10 @@
 using System.Text.Json;
+using AIChallenge.Data;
 using AIChallenge.Models;
 
-namespace AIChallenge.Data;
+namespace AIChallenge.Repositories;
 
-public interface IDataStore
-{
-    Task<AppData> ReadAsync(CancellationToken cancellationToken = default);
-
-    Task WriteAsync(AppData data, CancellationToken cancellationToken = default);
-}
-
-public sealed class JsonDataStore : IDataStore
+public sealed class JsonEcommerceRepository : IEcommerceRepository
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
@@ -20,7 +14,7 @@ public sealed class JsonDataStore : IDataStore
     private readonly string _filePath;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
 
-    public JsonDataStore(IWebHostEnvironment environment)
+    public JsonEcommerceRepository(IWebHostEnvironment environment)
     {
         string dataDirectory = Path.Combine(environment.ContentRootPath, "DataStore");
         Directory.CreateDirectory(dataDirectory);

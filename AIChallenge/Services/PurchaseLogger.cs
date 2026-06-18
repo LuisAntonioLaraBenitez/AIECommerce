@@ -3,11 +3,6 @@ using AIChallenge.Models;
 
 namespace AIChallenge.Services;
 
-public interface IPurchaseLogger
-{
-    Task LogAsync(PurchaseAttemptLog log, CancellationToken cancellationToken = default);
-}
-
 public sealed class PurchaseLogger : IPurchaseLogger
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
