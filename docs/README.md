@@ -2,6 +2,10 @@
 
 Backend local para un marketplace orientado a clientes mexicanos. Expone una API HTTP con Swagger, persistencia JSON local, simulación de autorización de compras, seguimiento de órdenes y logs de intentos de compra.
 
+## Diagrama de arquitectura
+
+![Diagrama de arquitectura de AIChallenge E-commerce](./AIECommerce_ArchitectureDiagram.png)
+
 ## Funcionalidad
 
 Sí hace:
