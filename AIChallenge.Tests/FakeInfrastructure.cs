@@ -1,14 +1,14 @@
-using AIChallenge.Data;
 using AIChallenge.Models;
+using AIChallenge.Repositories;
 using AIChallenge.Services;
 
 namespace AIChallenge.Tests;
 
-internal sealed class InMemoryDataStore : IDataStore
+internal sealed class InMemoryEcommerceRepository : IEcommerceRepository
 {
     private AppData _data;
 
-    public InMemoryDataStore(AppData data)
+    public InMemoryEcommerceRepository(AppData data)
     {
         _data = data;
     }

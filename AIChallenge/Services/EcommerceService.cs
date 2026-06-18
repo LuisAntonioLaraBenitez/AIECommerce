@@ -1,41 +1,26 @@
-using AIChallenge.Data;
 using AIChallenge.Models;
+using AIChallenge.Repositories;
 
 namespace AIChallenge.Services;
-
-public interface IEcommerceService
-{
-    Task<ApiResult<Customer>> RegisterCustomerAsync(RegisterCustomerRequest request, CancellationToken cancellationToken = default);
-
-    Task<ApiResult<PaymentMethod>> RegisterPaymentMethodAsync(RegisterPaymentMethodRequest request, CancellationToken cancellationToken = default);
-
-    Task<IReadOnlyList<Product>> ListProductsAsync(CancellationToken cancellationToken = default);
-
-    Task<ApiResult<PurchaseOrder>> CreateOrderAsync(CreateOrderRequest request, CancellationToken cancellationToken = default);
-
-    Task<ApiResult<PurchaseOrder>> GetOrderAsync(string orderId, CancellationToken cancellationToken = default);
-
-    Task<IReadOnlyList<PurchaseOrder>> ListCustomerOrdersAsync(string customerId, CancellationToken cancellationToken = default);
-}
 
 public sealed class EcommerceService : IEcommerceService
 {
     private const decimal MaxOrderTotal = 5000.00m;
 
-    private readonly IDataStore _dataStore;
+    private readonly IEcommerceRepository _repository;
     private readonly IPurchaseLogger _purchaseLogger;
     private readonly TimeProvider _timeProvider;
 
-    public EcommerceService(IDataStore dataStore, IPurchaseLogger purchaseLogger, TimeProvider timeProvider)
+    public EcommerceService(IEcommerceRepository repository, IPurchaseLogger purchaseLogger, TimeProvider timeProvider)
     {
-        _dataStore = dataStore;
+        _repository = repository;
         _purchaseLogger = purchaseLogger;
         _timeProvider = timeProvider;
     }
 
     public async Task<ApiResult<Customer>> RegisterCustomerAsync(RegisterCustomerRequest request, CancellationToken cancellationToken = default)
     {
-        AppData data = await _dataStore.ReadAsync(cancellationToken);
+        AppData data = await _repository.ReadAsync(cancellationToken);
         string normalizedCurp = Validators.Normalize(request.Curp);
 
         if (data.Customers.Any(customer => string.Equals(customer.Curp, normalizedCurp, StringComparison.OrdinalIgnoreCase)))
@@ -68,13 +53,13 @@ public sealed class EcommerceService : IEcommerceService
             _timeProvider.GetUtcNow());
 
         data.Customers.Add(customer);
-        await _dataStore.WriteAsync(data, cancellationToken);
+        await _repository.WriteAsync(data, cancellationToken);
         return ApiResult<Customer>.Ok(customer);
     }
 
     public async Task<ApiResult<PaymentMethod>> RegisterPaymentMethodAsync(RegisterPaymentMethodRequest request, CancellationToken cancellationToken = default)
     {
-        AppData data = await _dataStore.ReadAsync(cancellationToken);
+        AppData data = await _repository.ReadAsync(cancellationToken);
         if (data.Customers.All(customer => customer.Id != request.CustomerId))
         {
             return ApiResult<PaymentMethod>.Fail(ErrorCodes.CustomerNotFound, "The customer does not exist.");
@@ -117,19 +102,19 @@ public sealed class EcommerceService : IEcommerceService
             _timeProvider.GetUtcNow());
 
         data.PaymentMethods.Add(paymentMethod);
-        await _dataStore.WriteAsync(data, cancellationToken);
+        await _repository.WriteAsync(data, cancellationToken);
         return ApiResult<PaymentMethod>.Ok(paymentMethod);
     }
 
     public async Task<IReadOnlyList<Product>> ListProductsAsync(CancellationToken cancellationToken = default)
     {
-        AppData data = await _dataStore.ReadAsync(cancellationToken);
+        AppData data = await _repository.ReadAsync(cancellationToken);
         return data.Products;
     }
 
     public async Task<ApiResult<PurchaseOrder>> CreateOrderAsync(CreateOrderRequest request, CancellationToken cancellationToken = default)
     {
-        AppData data = await _dataStore.ReadAsync(cancellationToken);
+        AppData data = await _repository.ReadAsync(cancellationToken);
         string authorizationCode = CreateAuthorizationCode();
         List<string> requestedSkus = request.Products.Select(product => product.Sku).ToList();
 
@@ -157,14 +142,14 @@ public sealed class EcommerceService : IEcommerceService
             new OrderStatusDetail(null, ["Order accepted", "Preparing shipment"]));
 
         data.Orders.Add(order);
-        await _dataStore.WriteAsync(data, cancellationToken);
+        await _repository.WriteAsync(data, cancellationToken);
         await LogAttemptAsync(request.CustomerId, request.PaymentMethodId, total, requestedSkus, true, authorizationCode, null, cancellationToken);
         return ApiResult<PurchaseOrder>.Ok(order);
     }
 
     public async Task<ApiResult<PurchaseOrder>> GetOrderAsync(string orderId, CancellationToken cancellationToken = default)
     {
-        AppData data = await _dataStore.ReadAsync(cancellationToken);
+        AppData data = await _repository.ReadAsync(cancellationToken);
         PurchaseOrder? order = data.Orders.FirstOrDefault(order => string.Equals(order.Id, orderId, StringComparison.OrdinalIgnoreCase));
         return order is null
             ? ApiResult<PurchaseOrder>.Fail(ErrorCodes.OrderNotFound, "The order does not exist.")
@@ -173,7 +158,7 @@ public sealed class EcommerceService : IEcommerceService
 
     public async Task<IReadOnlyList<PurchaseOrder>> ListCustomerOrdersAsync(string customerId, CancellationToken cancellationToken = default)
     {
-        AppData data = await _dataStore.ReadAsync(cancellationToken);
+        AppData data = await _repository.ReadAsync(cancellationToken);
         return data.Orders
             .Where(order => string.Equals(order.CustomerId, customerId, StringComparison.OrdinalIgnoreCase))
             .OrderByDescending(order => order.Date)
@@ -219,7 +204,7 @@ public sealed class EcommerceService : IEcommerceService
             new OrderStatusDetail(reason, []));
 
         data.Orders.Add(order);
-        await _dataStore.WriteAsync(data, cancellationToken);
+        await _repository.WriteAsync(data, cancellationToken);
         await LogAttemptAsync(request.CustomerId, request.PaymentMethodId, total, requestedSkus, false, authorizationCode, reason, cancellationToken);
         return ApiResult<PurchaseOrder>.Fail(errorCode, reason);
     }
