@@ -5,7 +5,7 @@ namespace AIChallenge.Services;
 
 public sealed class EcommerceService : IEcommerceService
 {
-    private const decimal MaxOrderTotal = 5000.00m;
+    private static readonly decimal MaxOrderTotal = 5000.00m;
 
     private readonly IEcommerceRepository _repository;
     private readonly IPurchaseLogger _purchaseLogger;
