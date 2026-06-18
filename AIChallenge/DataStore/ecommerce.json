@@ -1,0 +1,47 @@
+{
+  "customers": [],
+  "paymentMethods": [],
+  "products": [
+    {
+      "sku": "SKU-LAP-001",
+      "name": "Laptop ultraligera",
+      "price": 4299.00,
+      "features": [
+        "14 pulgadas",
+        "8 GB RAM",
+        "256 GB SSD"
+      ]
+    },
+    {
+      "sku": "SKU-MOU-002",
+      "name": "Mouse inal\u00E1mbrico",
+      "price": 349.00,
+      "features": [
+        "Bluetooth",
+        "Bater\u00EDa recargable",
+        "Garant\u00EDa 1 a\u00F1o"
+      ]
+    },
+    {
+      "sku": "SKU-KEY-003",
+      "name": "Teclado mec\u00E1nico",
+      "price": 899.00,
+      "features": [
+        "Switch azul",
+        "Distribuci\u00F3n espa\u00F1ol",
+        "Retroiluminado"
+      ]
+    },
+    {
+      "sku": "SKU-HED-004",
+      "name": "Aud\u00EDfonos con micr\u00F3fono",
+      "price": 699.00,
+      "features": [
+        "Cancelaci\u00F3n pasiva",
+        "Cable USB-C",
+        "Controles integrados"
+      ]
+    }
+  ],
+  "orders": []
+}

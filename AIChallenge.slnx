@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="AIChallenge.Tests/AIChallenge.Tests.csproj" />
+  <Project Path="AIChallenge/AIChallenge.csproj" />
+</Solution>
