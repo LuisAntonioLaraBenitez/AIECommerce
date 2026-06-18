@@ -145,6 +145,8 @@ internal sealed class FakeEcommerceService : IEcommerceService
 
     public IReadOnlyList<Product> Products { get; set; } = [];
 
+    public IReadOnlyList<Address> AddressesByPostalCode { get; set; } = [];
+
     public IReadOnlyList<PurchaseOrder> CustomerOrders { get; set; } = [];
 
     public Task<ApiResult<Customer>> RegisterCustomerAsync(RegisterCustomerRequest request, CancellationToken cancellationToken = default)
@@ -160,6 +162,11 @@ internal sealed class FakeEcommerceService : IEcommerceService
     public Task<IReadOnlyList<Product>> ListProductsAsync(CancellationToken cancellationToken = default)
     {
         return Task.FromResult(Products);
+    }
+
+    public Task<IReadOnlyList<Address>> ListAddressesByPostalCodeAsync(string postalCode, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(AddressesByPostalCode);
     }
 
     public Task<ApiResult<PurchaseOrder>> CreateOrderAsync(CreateOrderRequest request, CancellationToken cancellationToken = default)

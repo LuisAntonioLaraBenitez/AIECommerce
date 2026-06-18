@@ -30,7 +30,7 @@ public sealed class ValidatorsTests
     [Fact]
     public void IsKnownAddress_ReturnsTrue_ForSupportedAddress()
     {
-        Address address = new("Av. Insurgentes 123", "Roma Norte", "06700", "Cuauhtémoc", "Ciudad de México");
+        Address address = new("Calle 1", "Colima Centro", "28000", "Colima", "Colima");
 
         bool result = Validators.IsKnownAddress(address);
 
